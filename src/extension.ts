@@ -3,8 +3,9 @@
 import * as vscode from 'vscode';
 import {createReadStream} from 'fs';
 import {createInterface} from 'readline';
+import { url } from 'inspector';
 
-async function processLineByLine(uri: vscode.Uri, lineIdx: number): Promise<string> {
+async function processLineByLine(uri: vscode.Uri, lineIdx: number): Promise<[string,number]> {
 	const fileStream = createReadStream(uri.path);
   
 	const rl = createInterface({
@@ -20,10 +21,10 @@ async function processLineByLine(uri: vscode.Uri, lineIdx: number): Promise<stri
 	for await (line of rl) {
 		idx+=1;
 		if (idx === lineIdx) {
-			return line;
+			return [line, idx];
 		}
   	}
-	return line;
+	return [line, idx];
 }
 
 // this method is called when your extension is activated
@@ -31,7 +32,7 @@ async function processLineByLine(uri: vscode.Uri, lineIdx: number): Promise<stri
 export function activate(context: vscode.ExtensionContext) {
   
 	const jsonlScheme = 'jsonl';
-	let lineIdx = 1;
+	let lineIndexDict = Object();
 
 	const myProvider = new class implements vscode.TextDocumentContentProvider {
 
@@ -40,8 +41,14 @@ export function activate(context: vscode.ExtensionContext) {
 		onDidChange = this.onDidChangeEmitter.event;
 
 		async provideTextDocumentContent(uri: vscode.Uri): Promise<string> {
-			const line = await processLineByLine(uri,lineIdx);
-			const lineFormated = JSON.stringify(JSON.parse(line), null, 2);
+			let lineIdx = lineIndexDict[uri.path];
+			if (lineIdx === undefined) {
+				lineIdx=1;
+				lineIndexDict[uri.path]=lineIdx;
+			}
+			const res = await processLineByLine(uri,lineIdx);
+			lineIndexDict[uri.path] = res[1]; // handle when line index exceed file line count
+			const lineFormated = JSON.stringify(JSON.parse(res[0]), null, 2);
 			return lineFormated;
 		}
 	};
@@ -78,7 +85,8 @@ export function activate(context: vscode.ExtensionContext) {
 		if (document.uri.scheme !== jsonlScheme) {
 			return; // not my scheme
 		}
-		lineIdx+=1;
+		const lineIdx = document.uri.path.split('-');
+		lineIndexDict[document.uri.path]+=1;
 		myProvider.onDidChangeEmitter.fire(document.uri);
 	};
 	
@@ -90,8 +98,14 @@ export function activate(context: vscode.ExtensionContext) {
 		if (document.uri.scheme !== jsonlScheme) {
 			return; // not my scheme
 		}
-		lineIdx-=1;
-		myProvider.onDidChangeEmitter.fire(document.uri);
+		lineIndexDict[document.uri.path]-=1;
+
+		if (lineIndexDict[document.uri.path]<=0) {
+			lineIndexDict[document.uri.path]=1;
+		}
+		else {
+			myProvider.onDidChangeEmitter.fire(document.uri);
+		}
 	};
 
 	context.subscriptions.push(vscode.commands.registerCommand('json-line-viewer.preview', openPreviewHandler));
