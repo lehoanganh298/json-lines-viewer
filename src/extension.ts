@@ -1,12 +1,10 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { Utils } from 'vscode-uri';
 import {createReadStream} from 'fs';
 import {createInterface} from 'readline';
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
-async function processLineByLine(uri: vscode.Uri): Promise<string> {
+
+async function processLineByLine(uri: vscode.Uri, lineIdx: number): Promise<string> {
 	const fileStream = createReadStream(uri.path);
   
 	const rl = createInterface({
@@ -16,18 +14,42 @@ async function processLineByLine(uri: vscode.Uri): Promise<string> {
 	// Note: we use the crlfDelay option to recognize all instances of CR LF
 	// ('\r\n') in input.txt as a single line break.
   
-	for await (const line of rl) {
-		return line;
-	  // Each line in input.txt will be successively available here as `line`.
-	//   console.log(`Line from file: ${line}`);
-	}
-	return '';
-  }
+	// TODO: not having to iterate from the begining of file every time
+	let idx = 0;
+	let line='';
+	for await (line of rl) {
+		idx+=1;
+		if (idx === lineIdx) {
+			return line;
+		}
+  	}
+	return line;
+}
 
+// this method is called when your extension is activated
+// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	const command = 'json-line-viewer.preview';
   
-	const commandHandler = async (arg: any) => {
+	const jsonlScheme = 'jsonl';
+	let lineIdx = 1;
+
+	const myProvider = new class implements vscode.TextDocumentContentProvider {
+
+		// emitter and its event
+		onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();
+		onDidChange = this.onDidChangeEmitter.event;
+
+		async provideTextDocumentContent(uri: vscode.Uri): Promise<string> {
+			const line = await processLineByLine(uri,lineIdx);
+			const lineFormated = JSON.stringify(JSON.parse(line), null, 2);
+			return lineFormated;
+		}
+	};
+
+	context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(jsonlScheme, myProvider));
+
+
+	const openPreviewHandler = async (arg: any) => {
 		let uri = arg;
         if (!(uri instanceof vscode.Uri)) {
 			if (vscode.window.activeTextEditor) {
@@ -37,63 +59,46 @@ export function activate(context: vscode.ExtensionContext) {
                 return;
             }
         }
-
-	//   const languageId = 'json';
-	//   const activeEditor = vscode.window.activeTextEditor;
-  
-	//   if (!activeEditor) {
-	// 	return;
-	//   }
-  
-	//   vscode.languages.setTextDocumentLanguage(activeEditor.document, languageId);
-	const line = await processLineByLine(uri);
-	const document = await vscode.workspace.openTextDocument({content: line});
-	await vscode.window.showTextDocument(document);
-		await vscode.languages.setTextDocumentLanguage(document, "json");
-		await vscode.commands.executeCommand('editor.action.formatDocument');
-
-	//   await vscode.commands.executeCommand('openEditors.newUntitledFile').then(async ()=>{
-	// 	const editor = vscode.window.activeTextEditor;
-	// 	const line = await processLineByLine(uri);
-	// 	if (editor){
-	// 		await editor.edit(editBuilder => {
-	// 			editBuilder.insert(new vscode.Position(0,0),line);
-	// 		});
-	// 		// }).then(()=>{
-	// 		// 	vscode.languages.setTextDocumentLanguage(editor.document, 'json');
-	// 		// }).then(()=> {console.log('fdsfasdfsd');});
-
-	// 		// processLineByLine(uri);
-	// 	}
 		
-	// });
-	// const languageId = 'json';
-	//   const activeEditor = vscode.window.activeTextEditor;
-  
-	//   if (!activeEditor) {
-	// 	return;
-	//   }
-	  
-	// await  vscode.commands.executeCommand('workbench.action.editor.changeLanguageMode','json');
-	// await vscode.languages.setTextDocumentLanguage(activeEditor.document, languageId);
-	// await vscode.commands.executeCommand('editor.action.formatDocument');
+		// Change uri-scheme to "jsonl"
+		const jsonlUri = vscode.Uri.parse('jsonl:' + uri.path);
 
-	//   console.log(typeof(a)
-	//   vscode.window.showInformationMessage('Hello World!');
-	//   if (vscode.window.activeTextEditor){
-	//   	console.log(vscode.window.activeTextEditor.document.uri);
-	// 	  console.log(vscode.window.activeTextEditor.viewColumn);
-	//   }
+		const document = await vscode.workspace.openTextDocument(jsonlUri);
+		await vscode.window.showTextDocument(document, { preview: false });
+		
+		await vscode.languages.setTextDocumentLanguage(document, "json");
+		// await vscode.commands.executeCommand('editor.action.formatDocument');
 	};
-  
-	context.subscriptions.push(vscode.commands.registerCommand(command, commandHandler));
-    // context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(document => {
-	// 	console.log(Utils.basename(document.uri));
-	// 	console.log(Utils.basename(document.uri).match("code-stdin-[^.]+.txt"));
 
-	// }));
+	const nextLineHandler = async () => {
+		if (!vscode.window.activeTextEditor) {
+			return; // no editor
+		}
+		const { document } = vscode.window.activeTextEditor;
+		if (document.uri.scheme !== jsonlScheme) {
+			return; // not my scheme
+		}
+		lineIdx+=1;
+		myProvider.onDidChangeEmitter.fire(document.uri);
+	};
+	
+	const previousLineHandler = async () => {
+		if (!vscode.window.activeTextEditor) {
+			return; // no editor
+		}
+		const { document } = vscode.window.activeTextEditor;
+		if (document.uri.scheme !== jsonlScheme) {
+			return; // not my scheme
+		}
+		lineIdx-=1;
+		myProvider.onDidChangeEmitter.fire(document.uri);
+	};
 
-  }
+	context.subscriptions.push(vscode.commands.registerCommand('json-line-viewer.preview', openPreviewHandler));
+	context.subscriptions.push(vscode.commands.registerCommand('json-line-viewer.next-line', nextLineHandler));
+	context.subscriptions.push(vscode.commands.registerCommand('json-line-viewer.previous-line', previousLineHandler));
+
+}
 
 // this method is called when your extension is deactivated
 export function deactivate() {}
