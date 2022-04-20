@@ -6,7 +6,7 @@ import {createInterface} from 'readline';
 import { url } from 'inspector';
 
 async function processLineByLine(uri: vscode.Uri, lineIdx: number): Promise<[string,number]> {
-	const fileStream = createReadStream(uri.path);
+	const fileStream = createReadStream(uri.path.replace('(preview)','').trimEnd());
   
 	const rl = createInterface({
 	  input: fileStream,
@@ -68,10 +68,11 @@ export function activate(context: vscode.ExtensionContext) {
         }
 		
 		// Change uri-scheme to "jsonl"
-		const jsonlUri = vscode.Uri.parse('jsonl:' + uri.path);
+		// TODO: Add line index to title
+		const jsonlUri = vscode.Uri.parse('jsonl:' + uri.path + ' (preview)');
 
 		const document = await vscode.workspace.openTextDocument(jsonlUri);
-		await vscode.window.showTextDocument(document, { preview: false });
+		await vscode.window.showTextDocument(document);
 		
 		await vscode.languages.setTextDocumentLanguage(document, "json");
 		// await vscode.commands.executeCommand('editor.action.formatDocument');
