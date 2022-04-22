@@ -4,6 +4,8 @@ import * as vscode from 'vscode';
 import {createReadStream} from 'fs';
 import {createInterface} from 'readline';
 
+let lineIdxStatusBarItem: vscode.StatusBarItem;
+
 async function processLineByLine(uri: vscode.Uri, lineIdx: number): Promise<[string,number]> {
 	const fileStream = createReadStream(uri.path.replace('(preview)','').trimEnd());
   
@@ -47,6 +49,8 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 			const res = await processLineByLine(uri,lineIdx);
 			lineIndexDict[uri.path] = res[1]; // handle when line index exceed file line count
+			updateStatusBarItem();
+			
 			const lineFormated = JSON.stringify(JSON.parse(res[0]), null, 2);
 			return lineFormated;
 		}
@@ -112,6 +116,24 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('json-line-viewer.next-line', nextLineHandler));
 	context.subscriptions.push(vscode.commands.registerCommand('json-line-viewer.previous-line', previousLineHandler));
 
+	lineIdxStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100000);
+	context.subscriptions.push(lineIdxStatusBarItem);
+	context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(updateStatusBarItem));
+	updateStatusBarItem();
+
+	function updateStatusBarItem(): void {
+		if (!vscode.window.activeTextEditor) {
+			lineIdxStatusBarItem.hide(); // no editor
+			return;
+		}
+		const { document } = vscode.window.activeTextEditor;
+		if (document.uri.scheme !== jsonlScheme) {
+			lineIdxStatusBarItem.hide();
+			return; 
+		}
+		lineIdxStatusBarItem.text = `JSONL at line: ${lineIndexDict[document.uri.path]}`;
+		lineIdxStatusBarItem.show();
+	}
 }
 
 // this method is called when your extension is deactivated
