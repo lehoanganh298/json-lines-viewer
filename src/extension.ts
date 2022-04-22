@@ -3,7 +3,6 @@
 import * as vscode from 'vscode';
 import {createReadStream} from 'fs';
 import {createInterface} from 'readline';
-import { url } from 'inspector';
 
 async function processLineByLine(uri: vscode.Uri, lineIdx: number): Promise<[string,number]> {
 	const fileStream = createReadStream(uri.path.replace('(preview)','').trimEnd());
@@ -62,7 +61,7 @@ export function activate(context: vscode.ExtensionContext) {
 			if (vscode.window.activeTextEditor) {
                 uri = vscode.window.activeTextEditor.document.uri;
             } else {
-                vscode.window.showInformationMessage("Open a CSV file first to show a preview.");
+                vscode.window.showInformationMessage("Open a JSON Line file first to show a preview.");
                 return;
             }
         }

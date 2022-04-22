@@ -18,17 +18,20 @@
       {
         "command": "json-line-viewer.preview",
         "title": "Open JSON Line Preview",
-        "icon":"$(json)"
+        "icon":"$(json)",
+        "enablement": "editorLangId == jsonl"
       },
       {
         "command": "json-line-viewer.next-line",
-        "title": "Next Line",
-        "icon":"$(arrow-down)"
+        "title": "JSONL Next Line",
+        "icon":"$(arrow-down)",
+        "enablement": "editorLangId == jsonl"
       },
       {
         "command": "json-line-viewer.previous-line",
-        "title": "Previous Line",
-        "icon":"$(arrow-up)"
+        "title": "JSONL Previous Line",
+        "icon":"$(arrow-up)",
+        "enablement": "editorLangId == jsonl"
       }
     
     ],
@@ -36,8 +39,7 @@
       {
         "id": "jsonl",
         "extensions": [".jsonl",".jl"],
-        "aliases": ["JSON Line", "jsonl"],
-        "filenames": []
+        "aliases": ["JSON Line", "jsonl"]
       }
     ],
     "menus": {
