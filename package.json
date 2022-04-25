@@ -25,15 +25,20 @@
         "command": "json-line-viewer.next-line",
         "title": "JSONL Next Line",
         "icon":"$(arrow-down)",
-        "enablement": "editorLangId == jsonl"
+        "enablement": "resourceScheme == jsonl"
       },
       {
         "command": "json-line-viewer.previous-line",
         "title": "JSONL Previous Line",
         "icon":"$(arrow-up)",
-        "enablement": "editorLangId == jsonl"
+        "enablement": "resourceScheme == jsonl"
+      },
+      {
+        "command": "json-line-viewer.go-to-line",
+        "title": "JSONL Go to Line",
+        "icon":"$(selection)",
+        "enablement": "resourceScheme == jsonl"
       }
-    
     ],
     "languages": [
       {
@@ -59,12 +64,17 @@
         {
           "when": "resourceScheme == jsonl",
           "command": "json-line-viewer.previous-line",
-          "group": "navigation"
+          "group": "navigation@3"
         },
         {
           "when": "resourceScheme == jsonl",
           "command": "json-line-viewer.next-line",
-          "group": "navigation"
+          "group": "navigation@1"
+        },
+        {
+          "when": "resourceScheme == jsonl",
+          "command": "json-line-viewer.go-to-line",
+          "group": "navigation@2"
         }
       ]
     }

@@ -89,7 +89,6 @@ export function activate(context: vscode.ExtensionContext) {
 		if (document.uri.scheme !== jsonlScheme) {
 			return; // not my scheme
 		}
-		const lineIdx = document.uri.path.split('-');
 		lineIndexDict[document.uri.path]+=1;
 		myProvider.onDidChangeEmitter.fire(document.uri);
 	};
@@ -112,8 +111,35 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	};
 
+	const goToLine = async () => {
+		if (!vscode.window.activeTextEditor) {
+			return; // no editor
+		}
+		const { document } = vscode.window.activeTextEditor;
+		if (document.uri.scheme !== jsonlScheme) {
+			return; // not my scheme
+		}
+
+		let lineIdx = null;
+		while (lineIdx === null || isNaN(lineIdx)){
+			let lineIdxStr = await vscode.window.showInputBox(
+				{ prompt: 'Type a line number to preview Json object at that line.' });
+			if (lineIdxStr === undefined) {
+				break;
+			}
+
+			lineIdx = parseInt(lineIdxStr);
+		}
+		if (lineIdx !== null){
+			lineIndexDict[document.uri.path] = lineIdx;
+			myProvider.onDidChangeEmitter.fire(document.uri);
+		}
+	};
+
 	context.subscriptions.push(vscode.commands.registerCommand('json-line-viewer.preview', openPreviewHandler));
 	context.subscriptions.push(vscode.commands.registerCommand('json-line-viewer.next-line', nextLineHandler));
+	context.subscriptions.push(vscode.commands.registerCommand('json-line-viewer.go-to-line',goToLine));
+	
 	context.subscriptions.push(vscode.commands.registerCommand('json-line-viewer.previous-line', previousLineHandler));
 
 	lineIdxStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100000);
