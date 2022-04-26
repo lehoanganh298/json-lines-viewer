@@ -18,8 +18,7 @@
       {
         "command": "json-line-viewer.preview",
         "title": "Open JSON Line Preview",
-        "icon":"$(json)",
-        "enablement": "editorLangId == jsonl"
+        "icon":"$(json)"
       },
       {
         "command": "json-line-viewer.next-line",

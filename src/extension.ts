@@ -4,9 +4,11 @@ import * as vscode from 'vscode';
 import {createReadStream} from 'fs';
 import {createInterface} from 'readline';
 
+
 const jsonlScheme = 'jsonl';
 let lineIndexDict = Object();	// Store current line index of previewed json files
 let lineIdxStatusBarItem: vscode.StatusBarItem;
+
 
 // A custom content provider for jsonl file
 class JsonlContentProvider implements vscode.TextDocumentContentProvider {
@@ -28,6 +30,7 @@ class JsonlContentProvider implements vscode.TextDocumentContentProvider {
 		return lineFormated;
 	}
 };
+
 
 const jsonlProvider = new JsonlContentProvider();
 
@@ -86,10 +89,11 @@ async function readFileAtLine(uri: vscode.Uri, lineIdx: number): Promise<[string
 const openPreviewHandler = async (arg: any) => {
 	let uri = arg;
 	if (!(uri instanceof vscode.Uri)) {
-		if (vscode.window.activeTextEditor) {
-			uri = vscode.window.activeTextEditor.document.uri;
+		const activeEditor = vscode.window.activeTextEditor;
+		if (activeEditor && activeEditor.document.languageId === 'jsonl') {
+			uri = activeEditor.document.uri;
 		} else {
-			vscode.window.showInformationMessage("Open a JSON Line file first to show a preview.");
+			vscode.window.showInformationMessage("Open a JSON Lines file (.jsonl) first to show a preview.");
 			return;
 		}
 	}
