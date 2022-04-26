@@ -1,39 +1,39 @@
 {
-  "name": "json-line-viewer",
-  "displayName": "JSON Line Viewer",
-  "description": "View each json item of jsonl file in json format",
+  "name": "json-lines-viewer",
+  "displayName": "JSON Lines Viewer",
+  "description": "View each line of JSON Lines file in json format",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.64.0"
   },
   "categories": [
-    "Formatters"
+    "Other"
   ],
   "activationEvents": [
-    "onCommand:json-line-viewer.preview"
+    "onCommand:json-lines-viewer.preview"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "json-line-viewer.preview",
-        "title": "Open JSON Line Preview",
+        "command": "json-lines-viewer.preview",
+        "title": "Open JSON Lines Preview",
         "icon":"$(json)"
       },
       {
-        "command": "json-line-viewer.next-line",
+        "command": "json-lines-viewer.next-line",
         "title": "JSONL Next Line",
         "icon":"$(arrow-down)",
         "enablement": "resourceScheme == jsonl"
       },
       {
-        "command": "json-line-viewer.previous-line",
+        "command": "json-lines-viewer.previous-line",
         "title": "JSONL Previous Line",
         "icon":"$(arrow-up)",
         "enablement": "resourceScheme == jsonl"
       },
       {
-        "command": "json-line-viewer.go-to-line",
+        "command": "json-lines-viewer.go-to-line",
         "title": "JSONL Go to Line",
         "icon":"$(selection)",
         "enablement": "resourceScheme == jsonl"
@@ -43,36 +43,36 @@
       {
         "id": "jsonl",
         "extensions": [".jsonl",".jl"],
-        "aliases": ["JSON Line", "jsonl"]
+        "aliases": ["JSON Lines", "jsonl"]
       }
     ],
     "menus": {
       "explorer/context": [
         {
           "when": "resourceLangId == jsonl",
-          "command": "json-line-viewer.preview",
+          "command": "json-lines-viewer.preview",
           "group": "navigation"
         }
       ],
       "editor/title": [
         {
           "when": "editorLangId == jsonl",
-          "command": "json-line-viewer.preview",
+          "command": "json-lines-viewer.preview",
           "group": "navigation"
         },
         {
           "when": "resourceScheme == jsonl",
-          "command": "json-line-viewer.previous-line",
+          "command": "json-lines-viewer.previous-line",
           "group": "navigation@3"
         },
         {
           "when": "resourceScheme == jsonl",
-          "command": "json-line-viewer.next-line",
+          "command": "json-lines-viewer.next-line",
           "group": "navigation@1"
         },
         {
           "when": "resourceScheme == jsonl",
-          "command": "json-line-viewer.go-to-line",
+          "command": "json-lines-viewer.go-to-line",
           "group": "navigation@2"
         }
       ]

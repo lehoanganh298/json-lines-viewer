@@ -41,10 +41,10 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(jsonlScheme, jsonlProvider));
 
-	context.subscriptions.push(vscode.commands.registerCommand('json-line-viewer.preview', openPreviewHandler));
-	context.subscriptions.push(vscode.commands.registerCommand('json-line-viewer.next-line', nextLineHandler));
-	context.subscriptions.push(vscode.commands.registerCommand('json-line-viewer.previous-line', previousLineHandler));
-	context.subscriptions.push(vscode.commands.registerCommand('json-line-viewer.go-to-line',goToLine));
+	context.subscriptions.push(vscode.commands.registerCommand('json-lines-viewer.preview', openPreviewHandler));
+	context.subscriptions.push(vscode.commands.registerCommand('json-lines-viewer.next-line', nextLineHandler));
+	context.subscriptions.push(vscode.commands.registerCommand('json-lines-viewer.previous-line', previousLineHandler));
+	context.subscriptions.push(vscode.commands.registerCommand('json-lines-viewer.go-to-line',goToLine));
 
 	lineIdxStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100000);
 	context.subscriptions.push(lineIdxStatusBarItem);
