@@ -12,7 +12,7 @@ To open the preview, do one of the following:
 Move to different lines:
 - Click the `JSONL Next Line`, `JSONL Previous Line` or `JSONL Go to Line` icon in the editor title bar, or run the corresponding command.
 
-
+![JSON Lines Viewer](./resources/json-lines-viewer.png "Text to show on mouseover")
 <!-- ## Requirements -->
 
 

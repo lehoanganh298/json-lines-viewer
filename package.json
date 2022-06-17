@@ -3,6 +3,7 @@
   "displayName": "JSON Lines Viewer",
   "description": "View each line of JSON Lines file in json format",
   "version": "0.0.1",
+	"publisher": "lehoanganh298",
   "engines": {
     "vscode": "^1.64.0"
   },
