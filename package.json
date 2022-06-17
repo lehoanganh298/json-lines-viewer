@@ -4,6 +4,10 @@
   "description": "View each line of JSON Lines file in json format",
   "version": "0.0.1",
 	"publisher": "lehoanganh298",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/lehoanganh298/json-lines-viewer.git"
+	},
   "engines": {
     "vscode": "^1.64.0"
   },
