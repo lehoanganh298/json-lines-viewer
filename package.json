@@ -14,6 +14,7 @@
   "categories": [
     "Other"
   ],
+  "keywords": ["json lines", "jsonl", "json line", "jsonl viewer", "jsonl preview"],
   "activationEvents": [
     "onCommand:json-lines-viewer.preview"
   ],
