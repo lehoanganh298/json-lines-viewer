@@ -2,19 +2,25 @@
   "name": "json-lines-viewer",
   "displayName": "JSON Lines Viewer",
   "description": "View each line of JSON Lines file in json format",
-  "version": "0.0.1",
-	"publisher": "lehoanganh298",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/lehoanganh298/json-lines-viewer.git"
-	},
+  "version": "0.0.2",
+  "publisher": "lehoanganh298",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lehoanganh298/json-lines-viewer.git"
+  },
   "engines": {
     "vscode": "^1.64.0"
   },
   "categories": [
     "Other"
   ],
-  "keywords": ["json lines", "jsonl", "json line", "jsonl viewer", "jsonl preview"],
+  "keywords": [
+    "json lines",
+    "jsonl",
+    "json line",
+    "jsonl viewer",
+    "jsonl preview"
+  ],
   "activationEvents": [
     "onCommand:json-lines-viewer.preview"
   ],
@@ -24,32 +30,38 @@
       {
         "command": "json-lines-viewer.preview",
         "title": "Open JSON Lines Preview",
-        "icon":"$(json)"
+        "icon": "$(json)"
       },
       {
         "command": "json-lines-viewer.next-line",
         "title": "JSONL Next Line",
-        "icon":"$(arrow-down)",
+        "icon": "$(arrow-down)",
         "enablement": "resourceScheme == jsonl"
       },
       {
         "command": "json-lines-viewer.previous-line",
         "title": "JSONL Previous Line",
-        "icon":"$(arrow-up)",
+        "icon": "$(arrow-up)",
         "enablement": "resourceScheme == jsonl"
       },
       {
         "command": "json-lines-viewer.go-to-line",
         "title": "JSONL Go to Line",
-        "icon":"$(selection)",
+        "icon": "$(selection)",
         "enablement": "resourceScheme == jsonl"
       }
     ],
     "languages": [
       {
         "id": "jsonl",
-        "extensions": [".jsonl",".jl"],
-        "aliases": ["JSON Lines", "jsonl"]
+        "extensions": [
+          ".jsonl",
+          ".jl"
+        ],
+        "aliases": [
+          "JSON Lines",
+          "jsonl"
+        ]
       }
     ],
     "menus": {
