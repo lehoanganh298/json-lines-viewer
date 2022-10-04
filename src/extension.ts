@@ -99,8 +99,15 @@ const openPreviewHandler = async (arg: any) => {
 	}
 	
 	// Change uri-scheme to "jsonl"
-	const jsonlUri = vscode.Uri.parse('jsonl:' + uri.path + ' (preview)');
-
+	let uriPath = "";
+	if (uri._fsPath !== undefined) {
+		uriPath = uri._fsPath;
+	}
+	else {
+		uriPath = uri.path;
+	}
+	const jsonlUri = vscode.Uri.parse('jsonl:' + uriPath + ' (preview)');
+	
 	const document = await vscode.workspace.openTextDocument(jsonlUri);
 	await vscode.window.showTextDocument(document);
 	
