@@ -32,6 +32,14 @@ Move to different lines:
 ## Release Notes
 
 
-### 1.0.0
-
+### 0.0.1
 Initial release
+
+### 0.0.2
+Update Readme and instructions
+
+### 0.0.3
+Fix path error in Windows
+
+### 0.0.4
+Fix path error in Linux

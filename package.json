@@ -2,7 +2,7 @@
   "name": "json-lines-viewer",
   "displayName": "JSON Lines Viewer",
   "description": "View each line of JSON Lines file in json format",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publisher": "lehoanganh298",
   "repository": {
     "type": "git",

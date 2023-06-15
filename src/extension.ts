@@ -3,6 +3,7 @@
 import * as vscode from 'vscode';
 import {createReadStream} from 'fs';
 import {createInterface} from 'readline';
+import { url } from 'inspector';
 
 
 const jsonlScheme = 'jsonl';
@@ -100,7 +101,7 @@ const openPreviewHandler = async (arg: any) => {
 	
 	// Change uri-scheme to "jsonl"
 	let uriPath = "";
-	if (uri._fsPath !== undefined) {
+	if (uri._fsPath !== undefined && uri._fsPath !== null) {
 		uriPath = uri._fsPath;
 	}
 	else {
